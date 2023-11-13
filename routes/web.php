@@ -3,6 +3,7 @@
 // use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\RegistrationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,12 +18,15 @@ use App\Http\Controllers\Admin\DashboardController;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('home');
 
 Auth::routes();
 
+Route::get('registration', [RegistrationController::class,'create'])->name('registration.create');
+Route::post('registration/store', [RegistrationController::class,'store'])->name('registration.store');
 
 Route::middleware(['auth','admin'])->group(function(){    
     Route::get('/admin', [DashboardController::class,'index'])->name('admin.dashboard');   
-    // Route::resource('users', UserController::class);   
+    Route::get('registration/index', [RegistrationController::class,'index'])->name('registration.index');   
+    Route::delete('registration/destroy', [RegistrationController::class,'destroy'])->name('registration.destroy');   
 });
