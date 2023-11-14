@@ -33,7 +33,7 @@
     MAIL_FROM_ADDRESS="email kita"
     MAIL_FROM_NAME="${APP_NAME}"
     ```
-sesuaikan email dan password kalian untuk gmail
+ssesuaikan email dan password kalian untuk gmail. Pastikan untuk mengaktifkan pengaturan Google Keamanan pada akun Gmail Kita. Caranya, masuk ke halaman Kelola Akun Google Anda lalu klik  Keamanan  . Scroll ke bawah sampai Kita menemukan bagian Akses aplikasi yang kurang aman , set menjadi Nonaktif  seperti gambar di bawah ini.
 
 
 
