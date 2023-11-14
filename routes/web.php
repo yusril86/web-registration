@@ -22,11 +22,16 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('registration', [RegistrationController::class,'create'])->name('registration.create');
-Route::post('registration/store', [RegistrationController::class,'store'])->name('registration.store');
+Route::get('registration', [RegistrationController::class, 'create'])->name('registration.create');
+Route::post('registration/store', [RegistrationController::class, 'store'])->name('registration.store');
 
-Route::middleware(['auth','admin'])->group(function(){    
-    Route::get('/admin', [DashboardController::class,'index'])->name('admin.dashboard');   
-    Route::get('registration/index', [RegistrationController::class,'index'])->name('registration.index');   
-    Route::delete('registration/destroy', [RegistrationController::class,'destroy'])->name('registration.destroy');   
+Route::middleware(['auth', 'admin'])->name('admin.')->group(function () {
+    Route::get('/admin', [DashboardController::class, 'index'])->name('dashboard');
+    Route::prefix('admin')->group(function () {
+       /*  Route::get('registration/index', [RegistrationController::class, 'index'])->name('registration.index');
+        Route::get('registration/edit/{id}', [RegistrationController::class, 'edit'])->name('registration.edit');
+        Route::delete('registration/destroy/{id}', [RegistrationController::class, 'destroy'])->name('registration.destroy'); */
+
+        Route::resource('registration',RegistrationController::class);
+    });
 });

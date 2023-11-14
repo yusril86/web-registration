@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\RegistrationEmail;
 use App\Models\Registration;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class RegistrationController extends Controller
 {
@@ -13,7 +15,7 @@ class RegistrationController extends Controller
     public function index()
     {
         $registrations = Registration::all();
-        return view('pages.backend.register.index');
+        return view('pages.backend.register.index',compact('registrations'));
     }
 
     /**
@@ -35,12 +37,35 @@ class RegistrationController extends Controller
             'alamat' => ['required', 'string', 'max:255']
         ]);
 
-        Registration::create($validation);
+        try {
+            $savetoDb  = Registration::create($validation);
 
-        return redirect(route('home'))->with([
+            if ($savetoDb) {
+                $data = [
+                    'name' => $request->name,
+                    'body' => 'Terima kasih telah register di website kami '
+                ];
+
+                Mail::to($request->email)->send(new RegistrationEmail($data));
+            }
+
+            return redirect(route('home'))->with([
+                'status' => 'Register Berhasil',
+                'type'   => 'success'
+            ]);
+        } catch (\Exception $e) {
+            // return response()->json(['error' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
+            return redirect(route('home'))->with([
+                'status' => $e->getMessage(),
+                'type'   => 'error'
+            ]);
+        }
+
+
+       /*  return redirect(route('home'))->with([
             'status' => 'Register Berhasil',
             'type'   => 'success'
-        ]);
+        ]); */
     }
 
     /**
@@ -56,7 +81,8 @@ class RegistrationController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $registration = Registration::findOrFail($id);
+        return view('pages.backend.register.edit',compact('registration'));
     }
 
     /**
@@ -64,7 +90,15 @@ class RegistrationController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validation = $request->validate([
+            'name' => ['required', 'string', 'max:255'],           
+            'alamat' => ['required', 'string', 'max:255']
+        ]);
+        $register = Registration::findOrFail($id);
+
+        $register->update($validation);
+
+        return redirect(route('admin.registration.index'));
     }
 
     /**
@@ -72,6 +106,10 @@ class RegistrationController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $register = Registration::findOrFail($id);
+
+        $register->delete();
+
+        return redirect(route('admin.registration.index'));
     }
 }
